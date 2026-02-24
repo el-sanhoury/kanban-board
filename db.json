@@ -1,0 +1,74 @@
+{
+  "tasks": [
+    {
+      "id": "3",
+      "title": "Performance audit",
+      "description": "Lighthouse scores and bundle analysis",
+      "priority": "low",
+      "column": "todo"
+    },
+    {
+      "id": "4",
+      "title": "Notification system",
+      "description": "Toast notifications and in-app alerts",
+      "priority": "medium",
+      "column": "in-progress"
+    },
+    {
+      "id": "5",
+      "title": "User settings page",
+      "description": "Profile editing, preferences, and account management",
+      "priority": "low",
+      "column": "in-progress"
+    },
+    {
+      "id": "6",
+      "title": "Authentication flow",
+      "description": "Implement login, signup, and password reset screens",
+      "priority": "high",
+      "column": "todo"
+    },
+    {
+      "id": "7",
+      "title": "File upload component",
+      "description": "Drag and drop file upload with preview",
+      "priority": "medium",
+      "column": "todo"
+    },
+    {
+      "id": "8",
+      "title": "Dark mode support",
+      "description": "Add theme toggle and CSS variable switching",
+      "priority": "medium",
+      "column": "review"
+    },
+    {
+      "id": "9",
+      "title": "Dashboard layout",
+      "description": "Build responsive sidebar and main content area",
+      "priority": "medium",
+      "column": "review"
+    },
+    {
+      "id": "10",
+      "title": "Design system tokens",
+      "description": "Set up color palette, typography, and spacing scales",
+      "priority": "high",
+      "column": "done"
+    },
+    {
+      "title": "sanhouri",
+      "description": "lorem",
+      "priority": "low",
+      "column": "in-progress",
+      "id": "JbFQEQp"
+    },
+    {
+      "title": "ssssssssss",
+      "description": "",
+      "priority": "medium",
+      "column": "magdey",
+      "id": "79NJWXJ"
+    }
+  ]
+}
