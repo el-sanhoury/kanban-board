@@ -6,8 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "server": "json-server --watch db.json --port 3001"
+    "lint": "eslint"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -28,7 +27,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
-    "json-server": "^0.17.4",
     "typescript": "^5"
   }
 }

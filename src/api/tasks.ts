@@ -1,7 +1,8 @@
 import axios from "axios";
 import type { Task } from "@/types/task";
 
-const api = axios.create({ baseURL: "http://localhost:3001" });
+// Use relative URL so it works both locally and on Vercel
+const api = axios.create({ baseURL: "/api" });
 
 const LIMIT = 6;
 
@@ -15,7 +16,6 @@ export async function fetchTasks(page: number, search?: string): Promise<TasksPa
   if (search) params.q = search;
 
   const res = await api.get<Task[]>("/tasks", { params });
-  // json-server exposes total count via this header for cursor-based pagination
   const total = Number(res.headers["x-total-count"] || 0);
 
   return {

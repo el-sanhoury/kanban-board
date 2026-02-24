@@ -149,7 +149,7 @@ export default function BoardColumn({
           "&:hover": {
             bgcolor: "rgba(255,255,255,0.08)",
             borderColor: "rgba(255,255,255,0.4)",
-            color: "rgba(255,255,255,0.85)",
+            color: "rgba(0,0,0,0.35)",
           },
         }}
       >
