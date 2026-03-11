@@ -14,7 +14,6 @@ import {
   type Priority,
   type Task,
 } from "@/types/task";
-import { useColumnsStore } from "@/store/columns";
 
 interface Props {
   open: boolean;
@@ -38,29 +37,25 @@ export default function TaskDialog({
   onSave,
   loading,
 }: Props) {
-  const columns = useColumnsStore((s) => s.columns);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<Priority>("medium");
-  const [column, setColumn] = useState<ColumnId>("todo");
 
   const handleEnter = () => {
     if (task) {
       setTitle(task.title);
       setDescription(task.description);
       setPriority(task.priority);
-      setColumn(task.column);
     } else {
       setTitle("");
       setDescription("");
       setPriority("medium");
-      setColumn(defaultColumn);
     }
   };
 
   const handleSubmit = () => {
     if (!title.trim()) return;
-    const columnToSave = task ? column : defaultColumn;
+    const columnToSave: ColumnId = task ? task.column : defaultColumn;
     onSave({
       title: title.trim(),
       description: description.trim(),
@@ -120,22 +115,6 @@ export default function TaskDialog({
             </MenuItem>
           ))}
         </TextField>
-        {task && (
-          <TextField
-            label="Column"
-            value={column}
-            onChange={(e) => setColumn(e.target.value as ColumnId)}
-            select
-            fullWidth
-            size="small"
-          >
-            {columns.map((c) => (
-              <MenuItem key={c.id} value={c.id}>
-                {c.title}
-              </MenuItem>
-            ))}
-          </TextField>
-        )}
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={onClose} color="inherit">
