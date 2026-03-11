@@ -28,16 +28,24 @@ export default function BoardColumn({
 }: Props) {
   return (
     <Box
-      sx={{
+      sx={(theme) => ({
         minWidth: 260,
         flex: "1 1 260px",
         display: "flex",
         flexDirection: "column",
         maxHeight: "calc(100vh - 140px)",
-        bgcolor: "oklch(92.5% 0.005 214.3)",
+        bgcolor:
+          theme.palette.mode === "dark"
+            ? "rgba(15,23,42,0.9)"
+            : "oklch(92.5% 0.005 214.3)",
         borderRadius: 2.5,
         p: 1,
-      }}
+        border: "1px solid",
+        borderColor:
+          theme.palette.mode === "dark"
+            ? "rgba(148,163,184,0.25)"
+            : "rgba(15,23,42,0.04)",
+      })}
     >
       <Box
         sx={{ px: 0.5, pb: 1.5, display: "flex", alignItems: "center", gap: 1 }}
@@ -62,15 +70,18 @@ export default function BoardColumn({
         </Typography>
         <Typography
           variant="caption"
-          sx={{
+          sx={(theme) => ({
             fontWeight: 600,
             fontSize: "0.72rem",
-            bgcolor: "oklch(96.3% 0.002 197.1)",
+            bgcolor:
+              theme.palette.mode === "dark"
+                ? "rgba(148,163,184,0.18)"
+                : "oklch(96.3% 0.002 197.1)",
             width: 20,
             height: 20,
             textAlign: "center",
             borderRadius: "50%",
-          }}
+          })}
         >
           {tasks.length}
         </Typography>
@@ -107,12 +118,15 @@ export default function BoardColumn({
               <Typography
                 variant="body2"
                 color="inherit"
-                sx={{
+                sx={(theme) => ({
                   textAlign: "center",
                   py: 3,
                   fontSize: "0.8rem",
-                  color: "rgba(0,0,0,0.35)",
-                }}
+                  color:
+                    theme.palette.mode === "dark"
+                      ? "rgba(148,163,184,0.7)"
+                      : "rgba(0,0,0,0.35)",
+                })}
               >
                 No tasks
               </Typography>
@@ -135,23 +149,39 @@ export default function BoardColumn({
       <Button
         startIcon={<AddIcon sx={{ fontSize: 16 }} />}
         onClick={() => onAdd(column.id)}
-        sx={{
+        sx={(theme) => ({
           mt: 0.5,
           mx: 0.5,
           py: 1,
-          color: "rgba(51, 48, 48, 0.6)",
+          color:
+            theme.palette.mode === "dark"
+              ? "rgba(226,232,240,0.8)"
+              : "rgba(51, 48, 48, 0.7)",
           fontWeight: 500,
           fontSize: "0.78rem",
           textTransform: "none",
           justifyContent: "center",
           borderRadius: 2,
-          border: "1px dashed rgba(51, 48, 48, 0.17)",
+          border: "1px dashed",
+          borderColor:
+            theme.palette.mode === "dark"
+              ? "rgba(148,163,184,0.5)"
+              : "rgba(51, 48, 48, 0.17)",
           "&:hover": {
-            bgcolor: "rgba(255,255,255,0.08)",
-            borderColor: "rgba(255,255,255,0.4)",
-            color: "rgba(0,0,0,0.35)",
+            bgcolor:
+              theme.palette.mode === "dark"
+                ? "rgba(148,163,184,0.12)"
+                : "rgba(255,255,255,0.8)",
+            borderColor:
+              theme.palette.mode === "dark"
+                ? "rgba(226,232,240,0.8)"
+                : "rgba(51, 48, 48, 0.35)",
+            color:
+              theme.palette.mode === "dark"
+                ? "rgba(226,232,240,0.95)"
+                : "rgba(0,0,0,0.7)",
           },
-        }}
+        })}
       >
         Add task
       </Button>

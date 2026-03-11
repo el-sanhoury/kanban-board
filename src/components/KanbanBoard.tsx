@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useCallback, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useCallback, useSyncExternalStore, useState } from "react";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
@@ -51,6 +51,10 @@ export default function KanbanBoard({
     [data],
   );
 
+  // Local ordering state so drag & drop can control
+  // the exact position of tasks within each column.
+  const [orderMap, setOrderMap] = useState<Record<ColumnId, string[]>>({});
+
   const grouped = useMemo(() => {
     const map: Record<string, Task[]> = {};
     columns.forEach((c) => (map[c.id] = []));
@@ -60,18 +64,109 @@ export default function KanbanBoard({
     return map;
   }, [allTasks, columns]);
 
+  // Derived, normalized ordering that stays in sync with the latest
+  // tasks while preserving any manual ordering from drag & drop.
+  const normalizedOrderMap = useMemo(() => {
+    const next: Record<ColumnId, string[]> = { ...orderMap };
+
+    columns.forEach((col) => {
+      const currentTasks = grouped[col.id] || [];
+      const currentIds = currentTasks.map((t) => t.id);
+      const currentIdSet = new Set(currentIds);
+
+      const existing = next[col.id] || [];
+      const filteredExisting = existing.filter((id) => currentIdSet.has(id));
+
+      const existingSet = new Set(filteredExisting);
+      const toAdd = currentIds.filter((id) => !existingSet.has(id));
+
+      if (!filteredExisting.length && toAdd.length) {
+        next[col.id] = currentIds;
+      } else if (filteredExisting.length || toAdd.length) {
+        next[col.id] = [...filteredExisting, ...toAdd];
+      }
+    });
+
+    return next;
+  }, [columns, grouped, orderMap]);
+
+  const orderedByColumn = useMemo(() => {
+    const result: Record<string, Task[]> = {};
+
+    columns.forEach((col) => {
+      const colTasks = grouped[col.id] || [];
+      const colOrder = normalizedOrderMap[col.id];
+
+      if (!colOrder || !colOrder.length) {
+        result[col.id] = colTasks;
+        return;
+      }
+
+      const byId = new Map(colTasks.map((t) => [t.id, t] as const));
+      const ordered: Task[] = [];
+
+      colOrder.forEach((id) => {
+        const task = byId.get(id);
+        if (task) ordered.push(task);
+      });
+
+      const orderedIds = new Set(colOrder);
+      const remaining = colTasks.filter((t) => !orderedIds.has(t.id));
+
+      result[col.id] = [...ordered, ...remaining];
+    });
+
+    return result;
+  }, [columns, grouped, normalizedOrderMap]);
+
   const onDragEnd = useCallback(
     (result: DropResult) => {
-      const { draggableId, destination } = result;
+      const { draggableId, destination, source } = result;
       if (!destination) return;
 
-      const newColumn = destination.droppableId as ColumnId;
-      const task = allTasks.find((t) => t.id === draggableId);
-      if (!task || task.column === newColumn) return;
+      const sourceColumn = source.droppableId as ColumnId;
+      const destColumn = destination.droppableId as ColumnId;
 
-      updateTask.mutate({ id: task.id, column: newColumn });
+      // Update local ordering so the card visually stays
+      // where the user dropped it.
+      setOrderMap(() => {
+        const next: Record<ColumnId, string[]> = { ...normalizedOrderMap };
+
+        const getIdsForColumn = (colId: ColumnId) => {
+          const fromState = next[colId];
+          if (fromState && fromState.length) return [...fromState];
+          const tasksInCol = grouped[colId] || [];
+          return tasksInCol.map((t) => t.id);
+        };
+
+        const sourceIds = getIdsForColumn(sourceColumn);
+        const destIds =
+          sourceColumn === destColumn
+            ? sourceIds
+            : getIdsForColumn(destColumn);
+
+        const [movedId] = sourceIds.splice(source.index, 1);
+        if (!movedId) return normalizedOrderMap;
+
+        if (sourceColumn === destColumn) {
+          sourceIds.splice(destination.index, 0, movedId);
+          return { ...next, [sourceColumn]: sourceIds };
+        }
+
+        destIds.splice(destination.index, 0, movedId);
+        return {
+          ...next,
+          [sourceColumn]: sourceIds,
+          [destColumn]: destIds,
+        };
+      });
+
+      const task = allTasks.find((t) => t.id === draggableId);
+      if (!task || task.column === destColumn) return;
+
+      updateTask.mutate({ id: task.id, column: destColumn });
     },
-    [allTasks, updateTask],
+    [allTasks, grouped, normalizedOrderMap, updateTask],
   );
 
   useEffect(() => {
@@ -91,20 +186,24 @@ export default function KanbanBoard({
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Box
-        sx={{
+        sx={(theme) => ({
           display: "flex",
           gap: 3,
           p: 3,
           overflowX: "auto",
           alignItems: "flex-start",
           minHeight: "calc(100vh - 64px)",
-        }}
+          background:
+            theme.palette.mode === "dark"
+              ? "radial-gradient(circle at top left, #1e293b 0, #020617 55%)"
+              : "transparent",
+        })}
       >
         {columns.map((col) => (
           <BoardColumn
             key={col.id}
             column={col}
-            tasks={grouped[col.id] || []}
+            tasks={orderedByColumn[col.id] || []}
             loading={isLoading}
             onEdit={onEdit}
             onDelete={onDelete}
@@ -119,12 +218,12 @@ export default function KanbanBoard({
             height: 44,
             flexShrink: 0,
             border: "2px dashed",
-            borderColor: "rgba(0,0,0,0.15)",
-            color: "rgba(0,0,0,0.35)",
+            borderColor: "rgba(148,163,184,0.45)",
+            color: "rgba(148,163,184,0.85)",
             "&:hover": {
-              borderColor: "rgba(0,0,0,0.3)",
-              color: "rgba(0,0,0,0.55)",
-              bgcolor: "rgba(0,0,0,0.04)",
+              borderColor: "rgba(226,232,240,0.9)",
+              color: "rgba(226,232,240,1)",
+              bgcolor: "rgba(15,23,42,0.35)",
             },
           }}
         >

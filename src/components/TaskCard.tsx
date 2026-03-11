@@ -28,20 +28,29 @@ export default function TaskCard({ task, index, onEdit, onDelete }: Props) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          sx={{
+          sx={(theme) => ({
             mb: 1.5,
             cursor: "grab",
-            bgcolor: "#fff",
+            bgcolor: theme.palette.background.paper,
             border: "1px solid",
-            borderColor: snapshot.isDragging ? "#4c6ef5" : "rgba(0,0,0,0.08)",
+            borderColor: snapshot.isDragging
+              ? theme.palette.primary.main
+              : theme.palette.divider,
             boxShadow: snapshot.isDragging
-              ? "0 8px 24px rgba(0,0,0,0.15)"
-              : "0 1px 3px rgba(0,0,0,0.06)",
+              ? "0 8px 24px rgba(15,23,42,0.28)"
+              : theme.palette.mode === "dark"
+                ? "0 1px 3px rgba(15,23,42,0.7)"
+                : "0 1px 3px rgba(15,23,42,0.06)",
             borderRadius: 2,
             transition: "border-color 0.2s, box-shadow 0.2s",
             "&:hover .task-actions": { opacity: 1 },
-            "&:hover": { borderColor: "rgba(0,0,0,0.15)" },
-          }}
+            "&:hover": {
+              borderColor:
+                theme.palette.mode === "dark"
+                  ? "rgba(148,163,184,0.8)"
+                  : "rgba(15,23,42,0.18)",
+            },
+          })}
         >
           <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
             <Stack
@@ -82,19 +91,24 @@ export default function TaskCard({ task, index, onEdit, onDelete }: Props) {
                   onClick={() => onDelete(task)}
                   sx={{ p: 0.4 }}
                 >
-                  <DeleteIcon sx={{ fontSize: 16, color: "#aaa" }} />
+                  <DeleteIcon
+                    sx={(theme) => ({
+                      fontSize: 16,
+                      color: theme.palette.text.secondary,
+                    })}
+                  />
                 </IconButton>
               </Stack>
             </Stack>
             {task.description && (
               <Typography
                 variant="body2"
-                sx={{
+                sx={(theme) => ({
                   mt: 0.5,
-                  color: "#8c8c8c",
+                  color: theme.palette.text.secondary,
                   fontSize: "0.75rem",
                   lineHeight: 1.5,
-                }}
+                })}
               >
                 {task.description}
               </Typography>

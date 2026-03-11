@@ -10,6 +10,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+body[data-theme="dark"] {
+  background: #020617;
+  color: #e5e7eb;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 10px;

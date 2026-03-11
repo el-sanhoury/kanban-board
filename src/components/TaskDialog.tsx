@@ -60,11 +60,12 @@ export default function TaskDialog({
 
   const handleSubmit = () => {
     if (!title.trim()) return;
+    const columnToSave = task ? column : defaultColumn;
     onSave({
       title: title.trim(),
       description: description.trim(),
       priority,
-      column,
+      column: columnToSave,
     });
   };
 
@@ -119,20 +120,22 @@ export default function TaskDialog({
             </MenuItem>
           ))}
         </TextField>
-        <TextField
-          label="Column"
-          value={column}
-          onChange={(e) => setColumn(e.target.value as ColumnId)}
-          select
-          fullWidth
-          size="small"
-        >
-          {columns.map((c) => (
-            <MenuItem key={c.id} value={c.id}>
-              {c.title}
-            </MenuItem>
-          ))}
-        </TextField>
+        {task && (
+          <TextField
+            label="Column"
+            value={column}
+            onChange={(e) => setColumn(e.target.value as ColumnId)}
+            select
+            fullWidth
+            size="small"
+          >
+            {columns.map((c) => (
+              <MenuItem key={c.id} value={c.id}>
+                {c.title}
+              </MenuItem>
+            ))}
+          </TextField>
+        )}
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={onClose} color="inherit">

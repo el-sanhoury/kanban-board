@@ -6,20 +6,24 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import InputBase from "@mui/material/InputBase";
 import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
 import { styled } from "@mui/material/styles";
 import { useSearchStore } from "@/store/search";
 import { useTasks } from "@/hooks/useTasks";
+import { useColorMode } from "@/providers/ThemeProvider";
 
 const SearchBox = styled("div")(({ theme }) => ({
   position: "relative",
   display: "flex",
   alignItems: "center",
-  border: "1px solid #e0e0e0",
+  border: `1px solid ${theme.palette.divider}`,
   borderRadius: 8,
   padding: "4px 12px",
   width: 220,
-  backgroundColor: "#fff",
+  backgroundColor: theme.palette.background.paper,
   [theme.breakpoints.down("sm")]: {
     width: 140,
     padding: "3px 8px",
@@ -30,6 +34,7 @@ export default function Header() {
   const setQuery = useSearchStore((s) => s.setQuery);
   const [value, setValue] = useState("");
   const { data } = useTasks();
+  const { mode, toggleMode } = useColorMode();
 
   const totalTasks = useMemo(
     () => data?.pages.reduce((sum, p) => sum + p.data.length, 0) ?? 0,
@@ -47,24 +52,25 @@ export default function Header() {
     <AppBar
       position="sticky"
       elevation={0}
-      sx={{
-        bgcolor: "#fff",
-        color: "#1a1a2e",
-        borderBottom: "1px solid #eee",
-      }}
+      sx={(theme) => ({
+        bgcolor: theme.palette.background.paper,
+        color: theme.palette.text.primary,
+        borderBottom: "1px solid",
+        borderColor: theme.palette.divider,
+      })}
     >
-      <Toolbar sx={{ alignItems: "center" }}>
+      <Toolbar sx={{ alignItems: "center", gap: { xs: 1, sm: 1.5 } }}>
         <Box
           sx={{
             width: { xs: 28, sm: 38 },
             height: { xs: 28, sm: 38 },
-            bgcolor: "#4c6ef5",
+            bgcolor: "primary.main",
             borderRadius: { xs: 1.5, sm: 2 },
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
             gap: { xs: "3px", sm: "4px" },
             p: { xs: "5px", sm: "7px" },
-            mr: { xs: 1, sm: 1.5 },
+            mr: { xs: 0.5, sm: 1 },
             flexShrink: 0,
           }}
         >
@@ -77,7 +83,7 @@ export default function Header() {
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
-            lineHeight: 1, 
+            lineHeight: 1,
           }}
         >
           <Typography
@@ -96,16 +102,32 @@ export default function Header() {
             sx={{
               color: "text.secondary",
               fontSize: { xs: "0.6rem", sm: "0.7rem" },
-              marginTop: "-2px"
+              marginTop: "-2px",
             }}
           >
             {totalTasks} tasks
           </Typography>
         </Box>
         <Box sx={{ flexGrow: 1 }} />
+        <IconButton
+          color="inherit"
+          onClick={toggleMode}
+          aria-label="Toggle dark mode"
+          sx={{ mr: { xs: 0.5, sm: 1 } }}
+        >
+          {mode === "dark" ? (
+            <LightModeIcon fontSize="small" />
+          ) : (
+            <DarkModeIcon fontSize="small" />
+          )}
+        </IconButton>
         <SearchBox>
           <SearchIcon
-            sx={{ color: "#aaa", fontSize: { xs: 15, sm: 18 }, mr: 0.5 }}
+            sx={(theme) => ({
+              color: theme.palette.text.secondary,
+              fontSize: { xs: 15, sm: 18 },
+              mr: 0.5,
+            })}
           />
           <InputBase
             placeholder="Search tasks..."
